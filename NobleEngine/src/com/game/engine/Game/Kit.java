@@ -16,115 +16,122 @@ import com.game.engine.Chat.Chat;
 import com.game.engine.Util.ItemStackBuilder;
 import com.game.engine.Util.UtilPlayer;
 
-public class Kit
+public abstract class Kit
 {
-	private boolean isAllLeather = false;
-	private String name;
-	private String[] description;
-	private Material displayItem;
-	private ItemStack helmet;
-	private ItemStack chest;
-	private ItemStack leggins;
-	private ItemStack boots;
-	private List<ItemStack> contents = new ArrayList<>();
-	private HashMap<ItemStack, Integer> specificContent = new HashMap<ItemStack, Integer>();
+	private boolean _isAllLeather = false;
+	private boolean _kitHasArmor = false;
+	private String _name;
+	private String[] _description;
+	private Material _displayItem;
+	private ItemStack _helmet;
+	private ItemStack _chest;
+	private ItemStack _leggins;
+	private ItemStack _boots;
+	private List<ItemStack> _contents = new ArrayList<>();
+	private HashMap<ItemStack, Integer> _specificContent = new HashMap<ItemStack, Integer>();
 
 	public Kit(String kitName, String[] kitDescription, Material displayItem)
 	{
-		name = kitName;
-		description = kitDescription;
-		this.displayItem = displayItem;
-		GameEngine.Debug("Creating " + name + " kit.");
+		_name = kitName;
+		_description = kitDescription;
+		this._displayItem = displayItem;
+		GameEngine.Debug("Creating " + _name + " kit.");
 	}
+	
+	public abstract void loadAbilities();
 
 	public void setArmor(ItemStack helmet, ItemStack chest, ItemStack leggins, ItemStack boots, boolean isAllLeather)
 	{
-		this.helmet = helmet;
-		this.chest = chest;
-		this.leggins = leggins;
-		this.boots = boots;
-		this.isAllLeather = isAllLeather;
+		this._helmet = helmet;
+		this._chest = chest;
+		this._leggins = leggins;
+		this._boots = boots;
+		this._isAllLeather = isAllLeather;
+		this._kitHasArmor = true;
 	}
 
-	public void AddItem(ItemStack itemStack)
+	public void addItem(ItemStack itemStack)
 	{
-		contents.add(itemStack);
+		_contents.add(itemStack);
 	}
 
 	public void addSpecialItem(ItemStack item, int slot)
 	{
-		specificContent.put(item, slot);
+		_specificContent.put(item, slot);
 	}
 
-	public void RemoveItem(ItemStack itemStack)
+	public void removeItem(ItemStack itemStack)
 	{
-		if (contents.contains(itemStack)) contents.remove(itemStack);
+		if (_contents.contains(itemStack)) _contents.remove(itemStack);
 	}
 
-	public void Equip(Player player)
+	public void equip(Player player)
 	{
 		UtilPlayer.reset(player);
-		player.sendMessage(Chat.format("Kit", "You have equipped the &a" + name + "&f."));
-		for (ItemStack item : specificContent.keySet())
+		player.sendMessage(Chat.format("Kit", "You have equipped the &a" + _name + "&f."));
+		for (ItemStack item : _specificContent.keySet())
 		{
-			player.getInventory().setItem(specificContent.get(item), item);
+			player.getInventory().setItem(_specificContent.get(item), item);
 		}
-		for (ItemStack itemStack : contents)
+		for (ItemStack itemStack : _contents)
 		{
 			player.getInventory().addItem(itemStack);
 		}
-		if (isAllLeather = true)
+		if (_kitHasArmor = true)
 		{
+			if (_isAllLeather = true)
+			{
+				try
+				{
+					LeatherArmorMeta im1 = (LeatherArmorMeta) _helmet.getItemMeta();
+					im1.setColor(GameEngine.getCurrentGame().getTeam(player).GetLeatherColor());
+					_helmet.setItemMeta(im1);
+					LeatherArmorMeta im2 = (LeatherArmorMeta) _chest.getItemMeta();
+					im2.setColor(GameEngine.getCurrentGame().getTeam(player).GetLeatherColor());
+					_chest.setItemMeta(im2);
+					LeatherArmorMeta im3 = (LeatherArmorMeta) _leggins.getItemMeta();
+					im3.setColor(GameEngine.getCurrentGame().getTeam(player).GetLeatherColor());
+					_leggins.setItemMeta(im3);
+					LeatherArmorMeta im4 = (LeatherArmorMeta) _boots.getItemMeta();
+					im4.setColor(GameEngine.getCurrentGame().getTeam(player).GetLeatherColor());
+					_boots.setItemMeta(im4);
+				}
+				catch (NullPointerException e)
+				{
+					GameEngine.Debug("Caught kit item meta exception. Are you sure you added armor for " + getName() + "?");
+				}
+			}
 			try
 			{
-			LeatherArmorMeta im1 = (LeatherArmorMeta) helmet.getItemMeta();
-			im1.setColor(GameEngine.getCurrentGame().GetTeam(player).GetLeatherColor());
-			helmet.setItemMeta(im1);
-			LeatherArmorMeta im2 = (LeatherArmorMeta) chest.getItemMeta();
-			im2.setColor(GameEngine.getCurrentGame().GetTeam(player).GetLeatherColor());
-			chest.setItemMeta(im2);
-			LeatherArmorMeta im3 = (LeatherArmorMeta) leggins.getItemMeta();
-			im3.setColor(GameEngine.getCurrentGame().GetTeam(player).GetLeatherColor());
-			leggins.setItemMeta(im3);
-			LeatherArmorMeta im4 = (LeatherArmorMeta) boots.getItemMeta();
-			im4.setColor(GameEngine.getCurrentGame().GetTeam(player).GetLeatherColor());
-			boots.setItemMeta(im4);
+				player.getInventory().setHelmet(_helmet);
+				player.getInventory().setChestplate(_chest);
+				player.getInventory().setLeggings(_leggins);
+				player.getInventory().setBoots(_boots);
 			}
-			catch(NullPointerException e)
+			catch (NullPointerException e)
 			{
-				GameEngine.Debug("Caught kit item meta exception. Are you sure you added armor for " + GetName() + "?");
+				GameEngine.Debug("Caught kit set armor exception");
 			}
 		}
-		try
-		{
-			player.getInventory().setHelmet(helmet);
-			player.getInventory().setChestplate(chest);
-			player.getInventory().setLeggings(leggins);
-			player.getInventory().setBoots(boots);
-		}
-		catch (NullPointerException e)
-		{
-			GameEngine.Debug("Caught kit set armor exception");
-		}
 	}
 
-	public String GetName()
+	public String getName()
 	{
-		return name;
+		return _name;
 	}
 
-	public String[] GetDescription()
+	public String[] getDescription()
 	{
-		return description;
+		return _description;
 	}
 
-	public List<ItemStack> GetContents()
+	public List<ItemStack> getContents()
 	{
-		return contents;
+		return _contents;
 	}
 
 	public ItemStack getDisplayItem()
 	{
-		return new ItemStackBuilder(displayItem, 1, name, description, ChatColor.GREEN).buildItem();
+		return new ItemStackBuilder(_displayItem, 1, _name, _description, ChatColor.GREEN).buildItem();
 	}
 }

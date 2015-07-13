@@ -10,17 +10,17 @@ import com.game.engine.Commands.Type.staff.GameControl;
 public class CommandManager
 {
 	private static CommandManager instance = null;
+	private static List<GameCommands> _commandBag = new ArrayList<>();
 
 	public static CommandManager getInstance()
 	{
 		if (instance == null)
 		{
 			instance = new CommandManager();
-			// Doesn't register commands?? Look console after dinner
-			AddCommand(new commandHub());
-			AddCommand(new GameControl());
+			addCommand(new commandHub());
+			addCommand(new GameControl());
 
-			for (GameCommands command : commandBag)
+			for (GameCommands command : _commandBag)
 			{
 				command.registerCommand();
 			}
@@ -29,19 +29,17 @@ public class CommandManager
 		return instance;
 	}
 
-	private static List<GameCommands> commandBag = new ArrayList<>();
-
-	public static void AddCommand(GameCommands command)
+	public static void addCommand(GameCommands command)
 	{
-		if (!commandBag.contains(command))
+		if (!_commandBag.contains(command))
 		{
-			commandBag.add(command);
+			_commandBag.add(command);
 			GameEngine.Debug("Registering command: " + command.getName());
 		}
 	}
 
 	public static List<GameCommands> getCommandBag()
 	{
-		return commandBag;
+		return _commandBag;
 	}
 }

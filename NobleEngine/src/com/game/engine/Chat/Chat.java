@@ -1,6 +1,10 @@
 package com.game.engine.Chat;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.entity.Player;
+
+import com.game.engine.GameEngine;
 
 public abstract class Chat
 {
@@ -39,7 +43,12 @@ public abstract class Chat
 
 	public static String format(String head, String body)
 	{
-		return ChatColor.GRAY + "[" + cHead + head + ChatColor.GRAY + "]: " + ChatColor.translateAlternateColorCodes('&', body);
+		return ChatColor.AQUA + head + ChatColor.GOLD + ChatColor.BOLD + " > " + ChatColor.YELLOW + ChatColor.translateAlternateColorCodes('&', body);
+	}
+	
+	public static String colored(String body)
+	{
+		return ChatColor.translateAlternateColorCodes('&', body);
 	}
 
 	public static String gadget(String gadget)
@@ -71,6 +80,11 @@ public abstract class Chat
 	{
 		return cRank + rank + cReset + cBody;
 	}
+	
+	public static String structure(String rank, ChatColor color, String player, String message)
+	{
+		return  color + "" + cBold + rank + ChatColor.GRAY + " " + cPlayer + player + ChatColor.GRAY + ": " + cBody + message;
+	}
 
 	public static String seperator()
 	{
@@ -90,5 +104,17 @@ public abstract class Chat
 	public static String upgrade(String upgrade)
 	{
 		return cUpgrade + upgrade + cBody;
+	}
+	
+	public static void devMessage(String message)
+	{
+		GameEngine.Debug(message);
+		for(Player player: Bukkit.getOnlinePlayers())
+		{
+			if(player.isOp())
+			{
+				player.sendMessage(Chat.format("Dev-Message", message));
+			}
+		}
 	}
 }

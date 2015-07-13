@@ -1,44 +1,45 @@
 package com.game.engine.Game;
 
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.World;
 
-import com.game.engine.GameEngine;
+import com.game.engine.Chat.Chat;
+import com.game.engine.Game.GameManagement.GameWorld;
 
 public class Spawn
 {
-	private Team team;
-	private Location location;
-	private boolean isTaken = false;
+	private boolean _isSpawnTaken = false;
+	private Team _team;
+	private Location _location;
 
 	public Spawn(GameWorld world, Team team, double x, double y, double z)
 	{
-		this.team = team;
 		if(world.getWorld() == null)
-			Bukkit.broadcastMessage("the world is Null");
-		this.location = new Location(world.getWorld(), x, y, z);
+		{
+			Chat.devMessage("the world is Null");
+		}
+		this._team = team;
+		this._location = new Location(world.getWorld(), x, y, z);
 	}
 
 	public Team GetTeam()
 	{
-		return team;
+		return _team;
 	}
 
 	public Location GetLocation()
 	{
-		if(location.getWorld() == null)
-			Bukkit.broadcastMessage("the world is Null2");
-		return location;
+		if(_location.getWorld() == null)
+			Chat.devMessage("the world is Null2");
+		return _location;
 	}
 	
 	public void setIsTaken(boolean isTaken)
 	{
-		this.isTaken = isTaken;
+		this._isSpawnTaken = isTaken;
 	}
 	
 	public boolean getIsTaken()
 	{
-		return isTaken;
+		return _isSpawnTaken;
 	}
 }

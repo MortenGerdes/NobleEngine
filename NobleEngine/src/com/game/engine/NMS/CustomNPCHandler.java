@@ -18,8 +18,9 @@ import com.game.engine.NMS.types.customZombie;
 public class CustomNPCHandler
 {
 	private static CustomNPCHandler instance = null;
-	private ArrayList<customZombie> entities = new ArrayList<customZombie>();
 	private static BukkitTask testing;
+	
+	private ArrayList<customZombie> _entities = new ArrayList<customZombie>();
 
 	private CustomNPCHandler()
 	{
@@ -72,23 +73,23 @@ public class CustomNPCHandler
 	public void addEntitytoArrayList(customZombie entity)
 	{
 		GameEngine.Debug("Adding entity " + entity.getBukkitEntity().getType().getName() + " " + entity.getCustomName());
-		entities.add(entity);
+		_entities.add(entity);
 	}
 
 	public void removeEntityfromArrayList(customZombie entity)
 	{
-		entities.remove(entity);
+		_entities.remove(entity);
 	}
 
 	public void removeAllEntitiesfromArrayList()
 	{
 		removeAllCustomEntity();
-		entities.clear();
+		_entities.clear();
 	}
 
 	public void removeAllCustomEntity()
 	{
-		for (customZombie e : entities)
+		for (customZombie e : _entities)
 		{
 			GameEngine.Debug("Removed entity: " + e.getCustomName()); // Fix manager problem
 			e.getBukkitEntity().remove();
@@ -97,7 +98,7 @@ public class CustomNPCHandler
 
 	public void removeAllEntity()
 	{
-		for (Entity e : GameEngine.getCurrentGame().GetLobby().getWorld().getEntities())
+		for (Entity e : GameEngine.getCurrentGame().getLobby().getWorld().getEntities())
 		{
 			if (e instanceof Monster)
 			{
@@ -109,6 +110,6 @@ public class CustomNPCHandler
 
 	public ArrayList<customZombie> getEntities()
 	{
-		return entities;
+		return _entities;
 	}
 }

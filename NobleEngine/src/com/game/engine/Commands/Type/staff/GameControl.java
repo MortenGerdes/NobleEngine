@@ -8,9 +8,11 @@ import org.bukkit.entity.Player;
 import com.game.engine.GameEngine;
 import com.game.engine.Chat.Chat;
 import com.game.engine.Commands.GameCommands;
-import com.game.engine.Game.GameExtender;
-import com.game.engine.Game.GameManager;
-import com.game.engine.Game.GameState;
+import com.game.engine.CustomEvents.gameStateChange;
+import com.game.engine.Game.GameManagement.GameExtender;
+import com.game.engine.Game.GameManagement.GameManager;
+import com.game.engine.Game.GameManagement.GameState;
+import com.game.engine.Util.FileUtils;
 
 public class GameControl extends GameCommands
 {
@@ -26,30 +28,58 @@ public class GameControl extends GameCommands
 		{
 			if (GameEngine.getCurrentGame().getState() == GameState.WAITING)
 			{
-				GameEngine.getCurrentGame().Prepare();
+				GameEngine.getCurrentGame().prepare();
 				for (Player players : Bukkit.getOnlinePlayers())
 				{
 					players.sendMessage(Chat.format("GameEngine", sender.getName() + " has started the game!"));
-					players.playSound(players.getLocation(), Sound.ENDERDRAGON_GROWL, 1, 1);
+					players.playSound(players.getLocation(), Sound.ENDERDRAGON_HIT, 1, 1);
 				}
 			}
 			else
 			{
 				sender.sendMessage(Chat.format("GameEngine", "The game has not ended yet!"));
 			}
+			return;
 		}
 		if (getArgs()[0].equalsIgnoreCase("stop"))
 		{
 			if (GameEngine.getCurrentGame().getState() == GameState.STARTED)
 			{
-				GameEngine.getCurrentGame().Stop();
+				GameEngine.getCurrentGame().stop();
 				Bukkit.broadcastMessage(Chat.format("GameEngine", sender.getName() + " has stopped the game!"));
+			}
+			else if(GameEngine.getCurrentGame().getState() == GameState.PREPARING && GameEngine.getCurrentGame().getIsGameJoinable() == true)
+			{
+				GameEngine.getCurrentGame().stopPreparingCountDown();
+				Bukkit.broadcastMessage(Chat.format("GameEngine", sender.getName() + " has stopped the game!"));
+				for (Player onlineplayers : Bukkit.getOnlinePlayers())
+				{
+					GameEngine.getCurrentGame().getLobby().teleport(onlineplayers);
+					onlineplayers.playSound(onlineplayers.getLocation(), Sound.ENDERDRAGON_GROWL, 1, 1);
+				}
+
 			}
 			else
 			{
-				sender.sendMessage(Chat.format("GameEngine", "The game has not started yet!"));
+				sender.sendMessage(Chat.format("GameEngine", "The game has not fully started yet!"));
+			}
+			return;
+		}
+		if(getArgs()[0].equalsIgnoreCase("update"))
+		{
+			if(GameEngine.getCurrentGame().getState() == GameState.WAITING)
+			{
+				Chat.devMessage("Maps to the game " + GameManager.getCurrentGameExtender().getName() + " are being downloaded. Lag will occure");
+				FileUtils.DownloadMaps(GameManager.getCurrentGameExtender().getName()); // Depends on a connection. Heavy method.
+				Chat.devMessage("Maps has finished downloading");
+				return;
+			}
+			else
+			{
+				sender.sendMessage(Chat.format("Command", "You cannot update a game while it's in progress!"));
 			}
 		}
+		
 		if (getArgs()[0].equalsIgnoreCase("check"))
 		{
 			if (GameEngine.getCurrentGame() == null)
@@ -63,9 +93,9 @@ public class GameControl extends GameCommands
 				// sender.sendMessage("You have " + PlayerDataManager.getPlayerAmbrosia(sender) + " amount of Ambrosia");
 				// sender.sendMessage("Your rank is " + PlayerDataManager.getPlayerRank(sender));
 				sender.sendMessage("something happened!");
-				sender.sendMessage("The game is currently " + GameEngine.getCurrentGame().GetName());
-				sender.sendMessage("The gameworld is currently " + GameEngine.getCurrentGame().GetHost().getName());
-				sender.sendMessage("The lobbyworld is currently " + GameEngine.getCurrentGame().GetLobby().getName());
+				sender.sendMessage("The game is currently " + GameEngine.getCurrentGame().getName());
+				sender.sendMessage("The gameworld is currently " + GameEngine.getCurrentGame().getHost().getName());
+				sender.sendMessage("The lobbyworld is currently " + GameEngine.getCurrentGame().getLobby().getName());
 				long end = System.currentTimeMillis() - start;
 				sender.sendMessage("that took " + end + " milliseconds");
 			}
@@ -83,9 +113,9 @@ public class GameControl extends GameCommands
 				{
 					if (getArgs()[1].equalsIgnoreCase(ge.getInitials()))
 					{
-						GameEngine.getCurrentGame().ChangeGame(ge);
-						Bukkit.broadcastMessage(Chat.format("GameEngine", "Player " + ChatColor.GREEN + sender.getName() + ChatColor.GRAY + " changed the game to "
-								+ ChatColor.GOLD + GameEngine.getCurrentGame().GetName()));
+						GameEngine.getCurrentGame().changeGame(ge);
+						Bukkit.broadcastMessage(Chat.format("GameEngine", "Player " + ChatColor.GREEN + sender.getName() + ChatColor.YELLOW + " changed the game to "
+								+ ChatColor.GOLD + GameEngine.getCurrentGame().getName()));
 						return;
 					}
 				}
@@ -94,6 +124,7 @@ public class GameControl extends GameCommands
 			else
 			{
 				sender.sendMessage(Chat.format("GameEngine", "You cannot change to another game in an already started game!"));
+				return;
 			}
 		}
 	}

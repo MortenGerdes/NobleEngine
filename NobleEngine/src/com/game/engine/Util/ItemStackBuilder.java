@@ -13,67 +13,68 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 public class ItemStackBuilder
 {
-	private Material material;
-	private String displayName;
-	private String[] lore;
-	private ChatColor color;
-	private int amount;
-	private List<EnchantedItem> enchantments = new ArrayList<>();
+	private Material _material;
+	private String _displayName;
+	private String[] _lore;
+	private ChatColor _color;
+	private int _amount;
+	private List<EnchantedItem> _enchantments = new ArrayList<>();
 
 	public ItemStackBuilder(Material material, String name, ChatColor displayColor)
 	{
-		this.material = material;
-		this.displayName = name;
-		this.color = displayColor;
+		this._material = material;
+		this._displayName = name;
+		this._color = displayColor;
+		this._amount = 1;
 	}
 
 	public ItemStackBuilder(Material material, int amount, String name, ChatColor displayColor)
 	{
-		this.material = material;
-		this.displayName = name;
-		this.color = displayColor;
-		this.amount = amount;
+		this._material = material;
+		this._displayName = name;
+		this._color = displayColor;
+		this._amount = amount;
 	}
 
 	public ItemStackBuilder(Material material, int amount, String name, String[] lore, ChatColor displayColor)
 	{
-		this.material = material;
-		this.amount = amount;
-		this.color = displayColor;
-		this.displayName = name;
-		this.lore = lore;
+		this._material = material;
+		this._amount = amount;
+		this._color = displayColor;
+		this._displayName = name;
+		this._lore = lore;
 	}
 	
 	public ItemStackBuilder(Material material, int amount, String name, String[] lore, ChatColor displayColor, EnchantedItem... items)
 	{
-		this.material = material;
-		this.amount = amount;
-		this.color = displayColor;
-		this.displayName = name;
-		this.lore = lore;
+		this._material = material;
+		this._amount = amount;
+		this._color = displayColor;
+		this._displayName = name;
+		this._lore = lore;
 		
 		for(EnchantedItem e : items)
-			this.enchantments.add(e);
+			this._enchantments.add(e);
 	}
 
 	public ItemStack buildItem()
 	{
-		ItemStack item = new ItemStack(material, amount);
+		ItemStack item = new ItemStack(_material, _amount);
 		ItemMeta im = item.getItemMeta();
-		if (displayName != null)
+		if (_displayName != null)
 		{
-			im.setDisplayName(color + displayName);
+			im.setDisplayName(_color + _displayName);
 		}
-		if (lore != null)
+		if (_lore != null)
 		{
-			im.setLore(Arrays.asList(lore));
+			im.setLore(Arrays.asList(_lore));
 		}
 
 		item.setItemMeta(im);
 		
-		if(!this.enchantments.isEmpty())
+		if(!this._enchantments.isEmpty())
 		{
-			for(EnchantedItem e : this.enchantments)
+			for(EnchantedItem e : this._enchantments)
 			{
 				item.addUnsafeEnchantment(e.getEnchantment(), e.getLevel());
 			}

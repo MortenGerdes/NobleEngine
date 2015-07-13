@@ -5,8 +5,9 @@ import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 
 import com.game.engine.GameEngine;
+import com.game.engine.Chat.Announcer;
 import com.game.engine.Chat.Chat;
-import com.game.engine.Game.Game;
+import com.game.engine.Game.GameManagement.Game;
 
 public class StartedGameFreeze
 {
@@ -33,20 +34,29 @@ public class StartedGameFreeze
 				{
 					for (Player player : Bukkit.getOnlinePlayers())
 					{
-						player.sendMessage(Chat.format("SparkEngine", "The game will start in " + FreezeTime));
+						player.sendMessage(Chat.format("GameEngine", "The game will start in " + FreezeTime));
 						if (FreezeTime > 3)
 							player.playSound(player.getLocation(), Sound.CAT_MEOW, 1.0f, 1.0f);
 						else
 							player.playSound(player.getLocation(), Sound.FIREWORK_BLAST, 1.0f, 1.0f);
 					}
 				}
+				
+				if(FreezeTime == 9)
+				{
+					Announcer.announceGame();
+					for(Player player: Bukkit.getOnlinePlayers())
+					{
+						player.playSound(player.getLocation(), Sound.SUCCESSFUL_HIT, 1.0f, 1.0f);
+					}
+				}
 
 				if (FreezeTime <= 0)
 				{
-					Game.UnFreezeAllPlayersAtStart();
+					Game.unFreezeAllPlayersAtStart();
 					for (Player player : Bukkit.getOnlinePlayers())
 					{
-						player.sendMessage(Chat.format("SparkEngine", "The Game has started!"));
+						player.sendMessage(Chat.format("GameEngine", "The Game has started!"));
 					}
 					GameEngine.GetPlugin().getServer().getScheduler().cancelTask(Task1);
 				}

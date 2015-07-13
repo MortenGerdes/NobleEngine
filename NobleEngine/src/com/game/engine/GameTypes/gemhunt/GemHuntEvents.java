@@ -2,8 +2,6 @@ package com.game.engine.GameTypes.gemhunt;
 
 import java.util.HashMap;
 
-import noble.craft.core.NobleCore;
-
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
@@ -30,16 +28,16 @@ import org.bukkit.inventory.ItemStack;
 import com.game.engine.GameEngine;
 import com.game.engine.Chat.Chat;
 import com.game.engine.CustomEvents.gameStateChange;
-import com.game.engine.Game.Game;
-import com.game.engine.Game.GameEvents;
-import com.game.engine.Game.GameState;
-import com.game.engine.Game.GameWorld;
 import com.game.engine.Game.SpectatorManager;
 import com.game.engine.Game.Team;
+import com.game.engine.Game.GameManagement.Game;
+import com.game.engine.Game.GameManagement.IGameEvents;
+import com.game.engine.Game.GameManagement.GameState;
+import com.game.engine.Game.GameManagement.GameWorld;
 import com.game.engine.ScoreBoard.ScoreBoardFactory;
 import com.game.engine.Util.ItemStackBuilder;
 
-public class GemHuntEvents implements GameEvents,Listener{	
+public class GemHuntEvents implements IGameEvents,Listener{	
 	
 	int task;
 	int task2;
@@ -70,7 +68,7 @@ public class GemHuntEvents implements GameEvents,Listener{
 	@EventHandler
 	public void onPlayerInventoryInteract(InventoryClickEvent event)
 	{
-		if (world.validateEntity(event.getWhoClicked()))
+		if (world.validateSpectator(event.getWhoClicked()))
 		{
 			event.setCancelled(true);
 		}
@@ -81,14 +79,14 @@ public class GemHuntEvents implements GameEvents,Listener{
 	{
 		Bukkit.broadcastMessage("Testing: BlockBreak");
 		Player player = event.getPlayer();
-		if (world.validateEntity(player)) event.setCancelled(true);
+		if (world.validateSpectator(player)) event.setCancelled(true);
 	}
 
 	@EventHandler
 	public void blockBlockPlace(BlockPlaceEvent event)
 	{
 		Player player = event.getPlayer();
-		if (world.validateEntity(player))
+		if (world.validateSpectator(player))
 		{
 			event.setCancelled(true);
 		}
@@ -97,7 +95,7 @@ public class GemHuntEvents implements GameEvents,Listener{
 	@EventHandler
 	public void foodLevelChange(FoodLevelChangeEvent event)
 	{
-		if (world.validateEntity(event.getEntity()))
+		if (world.validateSpectator(event.getEntity()))
 		{
 			event.setFoodLevel(20);
 			event.setCancelled(true);
@@ -107,7 +105,7 @@ public class GemHuntEvents implements GameEvents,Listener{
 	@EventHandler
 	public void onItemDrop(PlayerDropItemEvent event)
 	{
-		if (world.validateEntity(event.getPlayer()))
+		if (world.validateSpectator(event.getPlayer()))
 		{
 			event.setCancelled(true);
 		}
@@ -119,7 +117,7 @@ public class GemHuntEvents implements GameEvents,Listener{
 		if (event.getToState() == GameState.STARTED)
 		{
 			Bukkit.broadcastMessage("Testing: GameStartEvent");
-			for (Player player : GameEngine.getCurrentGame().GetPlayers().keySet())
+			for (Player player : GameEngine.getCurrentGame().getPlayers().keySet())
 			{
 				player.getInventory().setItem(4, new ItemStackBuilder(Material.EMERALD, 1, "Bibiaas Gem", ChatColor.GREEN).buildItem());
 			}
@@ -134,18 +132,18 @@ public class GemHuntEvents implements GameEvents,Listener{
 		Team winningTeam = null;
 		int redTeamGems = 0;
 		int blueTeamGems = 0;
-		for (Player player : game.GetPlayers().keySet())
+		for (Player player : game.getPlayers().keySet())
 		{
-			if(GameEngine.getCurrentGame().GetSpectators().contains(player))
+			if(GameEngine.getCurrentGame().getSpectators().contains(player))
 			{
 				continue;
 			}
 			
-			if (game.GetTeam(player).equals(Game.toTeam("Red Team")))
+			if (game.getTeam(player).equals(Game.toTeam("Red Team")))
 			{
 				redTeamGems = redTeamGems + player.getInventory().getItem(4).getAmount();
 			}
-			else if (game.GetTeam(player).equals(Game.toTeam("Blue Team")))
+			else if (game.getTeam(player).equals(Game.toTeam("Blue Team")))
 			{
 				blueTeamGems = blueTeamGems + player.getInventory().getItem(4).getAmount();
 			}
@@ -175,10 +173,10 @@ public class GemHuntEvents implements GameEvents,Listener{
 		{
 			GameEngine.Debug("Something went wrong broadcasting the winner. Check code!");
 		}
-		for (Player player : GameEngine.getCurrentGame().GetPlayers().keySet())
+		for (Player player : GameEngine.getCurrentGame().getPlayers().keySet())
 		{
 			int reward = 0;
-			if(GameEngine.getCurrentGame().GetSpectators().contains(player))
+			if(GameEngine.getCurrentGame().getSpectators().contains(player))
 			{
 				player.sendMessage(Chat.format("Reward", "You earned 50 + 10 gold"));
 				reward = reward + 50 + 10;
@@ -197,14 +195,13 @@ public class GemHuntEvents implements GameEvents,Listener{
 				}
 			}
 			player.sendMessage(Chat.format("Reward", "You earned in a total of " + ChatColor.GOLD + reward + " gold!"));
-			NobleCore.getCurrencyManager().addTokens(player.getUniqueId().toString(), reward);
 		}
 	}
 
 	@EventHandler
 	public void onPlayerDeath(final PlayerDeathEvent event)
 	{
-		if (world.validateEntity(event.getEntity()))
+		if (world.validateSpectator(event.getEntity()))
 		{
 			int deathTime = 5;
 			int amount;
@@ -248,7 +245,7 @@ public class GemHuntEvents implements GameEvents,Listener{
 		{
 			if (e.getDamager() instanceof Player)
 			{
-				if (GameEngine.getCurrentGame().GetTeam((Player) e.getDamager()).equals(GameEngine.getCurrentGame().GetTeam((Player) e.getEntity())))
+				if (GameEngine.getCurrentGame().getTeam((Player) e.getDamager()).equals(GameEngine.getCurrentGame().getTeam((Player) e.getEntity())))
 				{
 					e.setCancelled(true);
 				}
@@ -260,7 +257,7 @@ public class GemHuntEvents implements GameEvents,Listener{
 			Arrow arrow = (Arrow) e.getDamager();
 			Player shooter = (Player) arrow.getShooter();
 			Player target = (Player) e.getEntity();
-			if (GameEngine.getCurrentGame().GetTeam(shooter).equals(GameEngine.getCurrentGame().GetTeam(target)))
+			if (GameEngine.getCurrentGame().getTeam(shooter).equals(GameEngine.getCurrentGame().getTeam(target)))
 			{
 				e.setCancelled(true);
 			}
@@ -293,7 +290,7 @@ public class GemHuntEvents implements GameEvents,Listener{
 			return;
 		}
 		Player p = e.getPlayer();
-		if (GameEngine.getCurrentGame().getPlayerKit(e.getPlayer()).GetName().contentEquals("Leaper"))
+		if (GameEngine.getCurrentGame().getPlayerKit(e.getPlayer()).getName().contentEquals("Leaper"))
 		{
 			if (cooldown.containsKey(p.getName()))
 			{
@@ -306,7 +303,7 @@ public class GemHuntEvents implements GameEvents,Listener{
 					return;
 				}
 			}
-			if (GameEngine.getCurrentGame().getPlayerKit(e.getPlayer()).GetName().contentEquals("Leaper"))
+			if (GameEngine.getCurrentGame().getPlayerKit(e.getPlayer()).getName().contentEquals("Leaper"))
 			{
 				if (e.getPlayer().getGameMode() != GameMode.CREATIVE && e.getPlayer().getLocation().getBlock().getRelative(BlockFace.DOWN).getType() != Material.AIR)
 				{
@@ -330,7 +327,7 @@ public class GemHuntEvents implements GameEvents,Listener{
 		}
 		if (p.getGameMode() != GameMode.CREATIVE)
 		{
-			if (GameEngine.getCurrentGame().getPlayerKit(e.getPlayer()).GetName().contentEquals("Leaper"))
+			if (GameEngine.getCurrentGame().getPlayerKit(e.getPlayer()).getName().contentEquals("Leaper"))
 			{
 				Long time = System.currentTimeMillis();
 				if (cooldown.containsKey(p.getName()))
@@ -384,7 +381,7 @@ public class GemHuntEvents implements GameEvents,Listener{
 					if (gameTime < 0)
 					{
 						GameEngine.Debug("Time ran out. Game stopped");
-						GameEngine.getCurrentGame().Stop();
+						GameEngine.getCurrentGame().stop();
 						onGameEndWinner();
 						Bukkit.getServer().getScheduler().cancelTask(task2);
 						gameTime = 200;
@@ -401,10 +398,10 @@ public class GemHuntEvents implements GameEvents,Listener{
 
 	public void assignScoreBoard()
 	{
-		GameEngine.getCurrentGame().GetPanels().clear();
-		for (Player player : GameEngine.getCurrentGame().GetPlayers().keySet())
+		GameEngine.getCurrentGame().getPanels().clear();
+		for (Player player : GameEngine.getCurrentGame().getPlayers().keySet())
 		{
-			GameEngine.getCurrentGame().GetPanels().put(player, new gemhuntScoreBoard(player));
+			GameEngine.getCurrentGame().getPanels().put(player, new gemhuntScoreBoard(player));
 		}
 		ScoreBoardFactory.globalScoreBoardUpdate();
 		startScoreBoardAutoUpdate();

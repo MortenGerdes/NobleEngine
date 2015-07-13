@@ -11,12 +11,14 @@ import com.game.engine.Chat.Chat;
 
 public class SpectatorManager
 {
+	// Util class
+	
 	public static void addSpectator(Player player)
 	{
 		player.setGameMode(GameMode.CREATIVE);
 		makeInvisible(player);
 		player.sendMessage(Chat.format("Spectate", "You are now hidden from other players."));
-		GameEngine.getCurrentGame().GetSpectators().add(player);
+		GameEngine.getCurrentGame().getSpectators().add(player);
 	}
 
 	public static void removeSpectator(Player player)
@@ -24,7 +26,7 @@ public class SpectatorManager
 		player.setGameMode(GameMode.SURVIVAL);
 		makeVisible(player);
 		player.sendMessage(Chat.format("spectate", "You are now visible to other players."));
-		GameEngine.getCurrentGame().GetSpectators().remove(player);
+		GameEngine.getCurrentGame().getSpectators().remove(player);
 	}
 	
 	public static void timedSpectator(final Player player, int seconds)
@@ -43,7 +45,6 @@ public class SpectatorManager
 		}, 20 * seconds);
 	}
 
-	@SuppressWarnings("deprecation")
 	private static void makeVisible(Player player)
 	{
 		for (Player players : Bukkit.getOnlinePlayers())
@@ -53,7 +54,6 @@ public class SpectatorManager
 		removeActiveEffects(player);
 	}
 
-	@SuppressWarnings("deprecation")
 	private static void makeInvisible(Player player)
 	{
 		for (Player players : Bukkit.getOnlinePlayers())
@@ -63,7 +63,6 @@ public class SpectatorManager
 		player.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, Integer.MAX_VALUE, 0));
 	}
 	
-	@SuppressWarnings("deprecation")
 	public static void makeVisibleAndCreative(Player player)
 	{
 		for (Player players : Bukkit.getOnlinePlayers())
@@ -74,7 +73,6 @@ public class SpectatorManager
 		player.setGameMode(GameMode.SURVIVAL);
 	}
 
-	@SuppressWarnings("deprecation")
 	public static void makeInvisibleAndCreative(Player player)
 	{
 		for (Player players : Bukkit.getOnlinePlayers())

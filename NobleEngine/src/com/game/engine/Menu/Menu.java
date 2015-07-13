@@ -18,18 +18,19 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 import com.game.engine.GameEngine;
-import com.game.engine.Game.Game;
+import com.game.engine.Game.GameManagement.Game;
 
 public abstract class Menu implements Listener
 {
-	//Variables that we will be working with
-	private PageInventory inventory;
-	private String name;
-	private Material material;
-	private int pages;
-	private ArrayList<ItemStack> displays = new ArrayList<>();
-	private Game game = GameEngine.getCurrentGame();
-	private boolean enabled = true;
+	private boolean _enabled = true;
+	private int _pages;
+	
+	private Material _material;
+	private PageInventory _inventory;
+	private String _name;
+	private ArrayList<ItemStack> _displays = new ArrayList<>();
+	private Game _game = GameEngine.getCurrentGame();
+	
 
 	/**
 	 * This is the super constructor for ever class that extends this menu.
@@ -43,9 +44,9 @@ public abstract class Menu implements Listener
 	 */
 	public Menu(String name, int pages, Material InteractableMaterial)
 	{
-		this.name = name;
-		this.pages = pages;
-		this.material = InteractableMaterial;
+		this._name = name;
+		this._pages = pages;
+		this._material = InteractableMaterial;
 		GameEngine.Register(this);
 	}
 
@@ -63,7 +64,7 @@ public abstract class Menu implements Listener
 	@EventHandler
 	public void onPlayerInteract(PlayerInteractEvent event)
 	{
-		if (enabled)
+		if (_enabled)
 		{
 			Player player = event.getPlayer();
 			ItemStack item = event.getItem();
@@ -76,15 +77,15 @@ public abstract class Menu implements Listener
 				if (item == null) return;
 				if (player.getItemInHand() == null) return;
 				if (!item.hasItemMeta()) return;
-				if (item.getItemMeta().getDisplayName().contains(name))
+				if (item.getItemMeta().getDisplayName().contains(_name))
 				{
-					displays.clear();
-					InventoryConstruct(player, item, game);
-					inventory = new PageInventory(player); // Creates the framework
-					inventory.setTitle(this.name);
-					inventory.setPage(pages);
-					inventory.setPages(this.displays); // Sets the items in the menu
-					inventory.openInventory(); // Opens the menu
+					_displays.clear();
+					InventoryConstruct(player, item, _game);
+					_inventory = new PageInventory(player); // Creates the framework
+					_inventory.setTitle(this._name);
+					_inventory.setPage(_pages);
+					_inventory.setPages(this._displays); // Sets the items in the menu
+					_inventory.openInventory(); // Opens the menu
 					event.setCancelled(true);
 				}
 			}
@@ -98,12 +99,12 @@ public abstract class Menu implements Listener
 	@EventHandler
 	public void onInventoryClose(InventoryCloseEvent event)
 	{
-		if (enabled)
+		if (_enabled)
 		{
 			Inventory currentInventory = event.getInventory(); // Gets the open menu
-			if (currentInventory.getName().contains(name)) // Check if the menu is a menu of mine
+			if (currentInventory.getName().contains(_name)) // Check if the menu is a menu of mine
 			{
-				displays.clear(); // Clears items
+				_displays.clear(); // Clears items
 				currentInventory.clear(); // Clear currentInventory.
 			}
 		}
@@ -115,7 +116,7 @@ public abstract class Menu implements Listener
 	@EventHandler
 	public void onInventoryClick(InventoryClickEvent event)
 	{
-		if (enabled)
+		if (_enabled)
 		{
 			try
 			{
@@ -137,13 +138,13 @@ public abstract class Menu implements Listener
 					return;
 				}
 				// Check if the item clicked is equal to an item in a menu of mine.
-				if (currentInventory.getName().equals(name))
+				if (currentInventory.getName().equals(_name))
 				{
-					for (ItemStack item : inventory.getItems())
+					for (ItemStack item : _inventory.getItems())
 					{
 						if (clicked.getType() == item.getType() && clicked.getItemMeta().getDisplayName().equals(item.getItemMeta().getDisplayName()))
 						{
-							InventoryInteract(player, clicked, event.getAction(), game); // execute the abstract method
+							InventoryInteract(player, clicked, event.getAction(), _game); // execute the abstract method
 						}
 					}
 				}
@@ -158,7 +159,7 @@ public abstract class Menu implements Listener
 	// Adds in item to the menu
 	public void addItemDisplay(ItemStack item)
 	{
-		displays.add(item);
+		_displays.add(item);
 	}
 
 	// Adds multiple items to the menu
@@ -166,7 +167,7 @@ public abstract class Menu implements Listener
 	{
 		for (ItemStack items : itemtoAdd)
 		{
-			displays.add(items);
+			_displays.add(items);
 		}
 	}
 
@@ -175,12 +176,12 @@ public abstract class Menu implements Listener
 	 */
 	public String getName()
 	{
-		return name;
+		return _name;
 	}
 
 	public Material getMaterial()
 	{
-		return material;
+		return _material;
 	}
 	
 	// Unregisters the events for the menu if needed.

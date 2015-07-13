@@ -6,30 +6,31 @@ import java.util.List;
 import org.bukkit.ChatColor;
 import org.bukkit.Color;
 
-import com.game.engine.Game.GameExtender;
-import com.game.engine.Game.GameWorld;
 import com.game.engine.Game.Kit;
 import com.game.engine.Game.Team;
-import com.game.engine.GameTypes.sillyslap.world.sillySlapWorld1;
+import com.game.engine.Game.GameManagement.GameExtender;
+import com.game.engine.Game.GameManagement.GameWorld;
+import com.game.engine.GameTypes.sillyslap.Kits.SillySlapDefaultKit;
+import com.game.engine.GameTypes.sillyslap.Score.SillySlapScoreManager;
+import com.game.engine.GameTypes.sillyslap.Worlds.sillySlapWorld1;
+import com.game.engine.GameTypes.sillyslap.Worlds.sillySlapWorld2;
 
-public class SillySlapGame extends GameExtender{
+public class SillySlapGame extends GameExtender
+{
+	private static List<GameWorld> _worlds = Arrays.asList((GameWorld)new sillySlapWorld2("SillySlap", "JungleVibes"), (GameWorld)new sillySlapWorld1("SillySlap", "Hell"));
 	
-	private static String gameName = "SillySlap";
-	private Team players = new Team(getGame(), "Player team", ChatColor.YELLOW, Color.YELLOW, (byte) 4);
-	private static Kit cookie = new DefaultKit();
-	
-	private static GameWorld Hell = new sillySlapWorld1(gameName, "Hell");
-	
-	private static List<GameWorld> worlds = Arrays.asList(Hell);
-
-	public SillySlapGame() {
-		super("SillySlap", "sillyslap", new String[]{"Hit players off the map", "Avoid the crazzy game end!"}, cookie, Hell, 12,
-				5, worlds, new SillySlapEvents());
+	public SillySlapGame()
+	{
+		super("SillySlap", "sillyslap", new String[]
+		{ "Hit players off the map", "Avoid the crazzy game end!" }, new SillySlapDefaultKit(), new sillySlapWorld1("SillySlap", "Hell"), 12, 5, _worlds, new SillySlapEvents(), SillySlapScoreManager.getInstance());
 	}
 
 	@Override
-	public void loadGame() {
-		addTeam(players);
-		addKit(cookie);
+	public void loadGame()
+	{
+		addTeam(new Team(getGame(), "Player team", ChatColor.YELLOW, Color.YELLOW, (byte) 4));
+		addKit(new SillySlapDefaultKit());
+		
+		setFreezingOnStart(false);
 	}
 }

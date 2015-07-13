@@ -2,8 +2,8 @@ package com.game.engine.GameTypes.gemhunt.world;
 
 import java.util.ArrayList;
 
-import com.game.engine.Game.Game;
 import com.game.engine.Game.Spawn;
+import com.game.engine.Game.GameManagement.Game;
 import com.game.engine.World.HostWorld;
 
 public class gemhuntWorld2 extends HostWorld

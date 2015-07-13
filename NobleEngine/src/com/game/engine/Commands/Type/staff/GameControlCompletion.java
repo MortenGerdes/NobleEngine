@@ -8,8 +8,8 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 
-import com.game.engine.Game.GameExtender;
-import com.game.engine.Game.GameManager;
+import com.game.engine.Game.GameManagement.GameExtender;
+import com.game.engine.Game.GameManagement.GameManager;
 
 public class GameControlCompletion implements TabCompleter
 {

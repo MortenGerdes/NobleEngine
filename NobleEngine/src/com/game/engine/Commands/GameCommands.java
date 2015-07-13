@@ -42,6 +42,7 @@ public abstract class GameCommands implements Listener, CommandExecutor
 		{
 			Player player = (Player) sender;
 			this.args = args;
+			
 			if (!cmd.getName().equalsIgnoreCase(commandName))
 			{
 				GameEngine.Debug("Command caught" + cmd.getName());
@@ -59,7 +60,7 @@ public abstract class GameCommands implements Listener, CommandExecutor
 				player.sendMessage(Chat.format("Command Usage", usage));
 				return true;
 			}
-			if (!(player.hasPermission(perm)) && allowYoutubers == false && perm != null)
+			if (!(player.hasPermission(perm)) || !(player.isOp()))
 			{
 				sender.sendMessage(Chat.format("Command", "&cYou don't have permission to the command: &6" + commandName));
 				return true;

@@ -8,6 +8,8 @@ import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
 import com.game.engine.GameEngine;
+import com.game.engine.Menu.MenuTypes.KitSelector;
+import com.game.engine.Menu.MenuTypes.TeamPrefere;
 import com.game.engine.Util.ItemStackBuilder;
 
 public class MenuManager

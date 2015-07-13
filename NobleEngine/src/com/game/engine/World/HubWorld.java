@@ -24,8 +24,8 @@ import org.bukkit.event.world.ChunkUnloadEvent;
 
 import com.game.engine.GameEngine;
 import com.game.engine.CustomEvents.gameStateChange;
-import com.game.engine.Game.GameState;
-import com.game.engine.Game.GameWorld;
+import com.game.engine.Game.GameManagement.GameState;
+import com.game.engine.Game.GameManagement.GameWorld;
 import com.game.engine.ScoreBoard.ScoreBoardFactory;
 import com.game.engine.ScoreBoard.playerScoreBoard;
 
@@ -213,11 +213,11 @@ public class HubWorld extends GameWorld
 	{
 		if(event.getFromState() == GameState.ENDED)
 		{
-			GameEngine.getCurrentGame().GetPanels().clear();
+			GameEngine.getCurrentGame().getPanels().clear();
 			
-			for(Player player: GameEngine.getCurrentGame().GetPlayers().keySet())
+			for(Player player: GameEngine.getCurrentGame().getPlayers().keySet())
 			{
-				GameEngine.getCurrentGame().GetPanels().put(player, new playerScoreBoard(player));
+				GameEngine.getCurrentGame().getPanels().put(player, new playerScoreBoard(player));
 			}
 			
 			ScoreBoardFactory.globalScoreBoardUpdate();
@@ -225,8 +225,5 @@ public class HubWorld extends GameWorld
 	}
 
 	@Override
-	public void setSpawnPointsFromHostWorld()
-	{
-		
-	}
+	public void setSpawnPointsFromHostWorld() { }
 }

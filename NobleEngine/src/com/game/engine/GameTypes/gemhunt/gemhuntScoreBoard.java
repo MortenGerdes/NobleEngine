@@ -4,8 +4,8 @@ import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
 import com.game.engine.GameEngine;
-import com.game.engine.Game.Game;
 import com.game.engine.Game.Team;
+import com.game.engine.Game.GameManagement.Game;
 import com.game.engine.ScoreBoard.ScoreBoardFactory;
 
 public class gemhuntScoreBoard extends ScoreBoardFactory
@@ -40,11 +40,11 @@ public class gemhuntScoreBoard extends ScoreBoardFactory
 	{
 		int amountOfGems = 0;
 		
-		for(Player player: game.GetPlayers().keySet())
+		for(Player player: game.getPlayers().keySet())
 		{
-			if(game.GetTeam(player).equals(team))
+			if(game.getTeam(player).equals(team))
 			{
-				if(!GameEngine.getCurrentGame().GetSpectators().contains(player))
+				if(!GameEngine.getCurrentGame().getSpectators().contains(player))
 				{
 				amountOfGems = amountOfGems + player.getInventory().getItem(4).getAmount();
 				}

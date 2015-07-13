@@ -10,21 +10,20 @@ import org.bukkit.event.Listener;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import com.game.engine.Ability.AbilityManager;
 import com.game.engine.Commands.CommandManager;
 import com.game.engine.Commands.Type.staff.GameControlCompletion;
-import com.game.engine.Game.Game;
-import com.game.engine.Game.GameManager;
-import com.game.engine.GemHunt.GemHunt;
-import com.game.engine.NMS.CustomNPCHandler;
-import com.game.engine.NMS.CustomNPCType;
+import com.game.engine.Game.GameManagement.Game;
+import com.game.engine.Game.GameManagement.GameManager;
+import com.game.engine.GameInstance.GameIns;
 
 public class GameEngine extends JavaPlugin
 {
-	private static boolean debug = true;
-	private static ChatColor C;
-	private static Logger logger = Logger.getLogger("GameEngine");
+	private static boolean _debug = true;
+	private static ChatColor _C;
+	private static Logger _logger = Logger.getLogger("GameEngine");
 
-	private static Game serverGame;
+	private static Game _serverGame;
 
 	public void onEnable()
 	{
@@ -32,24 +31,26 @@ public class GameEngine extends JavaPlugin
 
 		Bukkit.getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
 
-		serverGame = new GemHunt();
+		_serverGame = new GameIns();
 		CommandManager.getInstance();
 		getCommand("game").setTabCompleter(new GameControlCompletion());
 		//CustomNPCHandler.getInstance().removeAllEntity();
 		GameManager.getInstance();
 		GameManager.addCurrentGame(GameManager.getGame("GemHunt"));
+		AbilityManager.getInstance().registerAvailableAbilities();
 		
-		Register(getCurrentGame().GetLobby().gameWorld());
-		Register(getCurrentGame().GetHost().gameWorld());
+		Register(getCurrentGame().getLobby().gameWorld());
+		Register(getCurrentGame().getHost().gameWorld());
 		//CustomNPCType.registerEntities();
 		
-		getCurrentGame().ChangeGame(GameManager.getGame("GemHunt"));
+		getCurrentGame().changeGame(GameManager.getGame("NobleSpleef"));
+		getCurrentGame().changeGame(GameManager.getGame("NobleSpleef"));
 		
 	}
 
 	public void onDisable()
 	{
-		serverGame.Stop();
+		_serverGame.stop();
 		//CustomNPCType.unRegisterEntities();
 	}
 
@@ -71,25 +72,25 @@ public class GameEngine extends JavaPlugin
 
 	public static void Log(String message, Level level)
 	{
-		logger.log(level, ChatColor.translateAlternateColorCodes('&', message));
+		_logger.log(level, ChatColor.translateAlternateColorCodes('&', message));
 	}
 
 	public static void Debug(String message)
 	{
-		if (debug)
+		if (_debug)
 		{
-			String formatted = C.BLUE + "Debug> " + C.WHITE + message;
+			String formatted = _C.BLUE + "Debug> " + _C.WHITE + message;
 			Bukkit.getConsoleSender().sendMessage(formatted);
 		}
 	}
 
 	public static Game getCurrentGame()
 	{
-		return serverGame;
+		return _serverGame;
 	}
 
 	public static void setCurrentGame(Game game)
 	{
-		serverGame = game;
+		_serverGame = game;
 	}
 }

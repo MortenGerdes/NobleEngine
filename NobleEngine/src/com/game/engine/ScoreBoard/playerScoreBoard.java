@@ -6,8 +6,8 @@ import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
 import com.game.engine.GameEngine;
-import com.game.engine.Game.Game;
-import com.game.engine.Game.GameManager;
+import com.game.engine.Game.GameManagement.Game;
+import com.game.engine.Game.GameManagement.GameManager;
 
 public class playerScoreBoard extends ScoreBoardFactory
 {
@@ -30,21 +30,22 @@ public class playerScoreBoard extends ScoreBoardFactory
 
 	public void addGameInformation()
 	{
-		String name = StringUtils.center(ChatColor.GREEN + "Online Players:", 16);
+		addNewLine(" ");
+		String name = ChatColor.GREEN + "Online Players";
 		addNewLine(name);
 		
-		String setting = StringUtils.center(ChatColor.WHITE + Integer.toString(game.GetPlayers().size()) + "/" + Integer.toString(game.GetMaxPlayers()), 16);
+		String setting = StringUtils.center(ChatColor.WHITE + Integer.toString(game.getPlayers().size()) + "/" + Integer.toString(game.getMaxPlayers()), 16);
 		addNewLine(setting);
 		
-		addNewLine("    ");
+		addNewLine("       ");
 	}
 	
 	public void addNeeded()
 	{
-		String name = StringUtils.center(ChatColor.GREEN + "Needed", 16);
+		String name = ChatColor.GREEN + "Needed";
 		addNewLine(name);
 		
-		String setting = StringUtils.center(ChatColor.WHITE + "" + GameManager.getCurrentGameExtender().getMinplayer(), 16);
+		String setting = ChatColor.WHITE + "" + GameManager.getCurrentGameExtender().getMinplayer();
 		addNewLine(setting);
 		
 		addNewLine("     ");
@@ -52,12 +53,12 @@ public class playerScoreBoard extends ScoreBoardFactory
 	
 	public void addServer()
 	{
-		String name = StringUtils.center(ChatColor.GREEN + "Server", 16);
+		String name = ChatColor.GREEN + "Server";
 		addNewLine(name);
 		
-		String setting = StringUtils.center(ChatColor.WHITE + Bukkit.getServerName(), 16);
+		String setting = ChatColor.WHITE + Bukkit.getServerName();
 		addNewLine(setting);
 		
-		addNewLine("    ");
+		addNewLine("   ");
 	}
 }

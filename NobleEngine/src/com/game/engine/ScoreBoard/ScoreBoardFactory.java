@@ -12,26 +12,26 @@ import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.ScoreboardManager;
 
 import com.game.engine.GameEngine;
-import com.game.engine.Game.Game;
+import com.game.engine.Game.GameManagement.Game;
 
 public abstract class ScoreBoardFactory
 {
-	private Scoreboard board;
-	private Objective object;
-	private ScoreboardManager manager;
-	private Game game;
-	private Player player;
-	private ArrayList<Score> scores = new ArrayList<Score>();
-	private int LineNumber = 16;
+	private Scoreboard _board;
+	private Objective _object;
+	private ScoreboardManager _manager;
+	private Game _game;
+	private Player _player;
+	private ArrayList<Score> _scores = new ArrayList<Score>();
+	private int _LineNumber = 16;
 
 	public ScoreBoardFactory(String ObjectiveName, Game game, Player player)
 	{
-		this.game = game;
-		this.manager = Bukkit.getScoreboardManager();
-		this.board = manager.getNewScoreboard();
-		this.player = player;
-		this.object = board.registerNewObjective(ObjectiveName, "test");
-		object.setDisplaySlot(DisplaySlot.SIDEBAR);
+		this._game = game;
+		this._manager = Bukkit.getScoreboardManager();
+		this._board = _manager.getNewScoreboard();
+		this._player = player;
+		this._object = _board.registerNewObjective(ObjectiveName, "test");
+		_object.setDisplaySlot(DisplaySlot.SIDEBAR);
 		createScoreBoard();
 	}
 
@@ -39,7 +39,7 @@ public abstract class ScoreBoardFactory
 
 	public void createScoreBoard()
 	{
-		object.setDisplayName(ChatColor.GOLD + game.GetName());
+		_object.setDisplayName(ChatColor.GOLD + _game.getName());
 	}
 
 	public void updateScoreBoard()
@@ -47,38 +47,38 @@ public abstract class ScoreBoardFactory
 		resetScoreBoard();
 		createScoreBoard();
 		run();
-		player.setScoreboard(board);
+		_player.setScoreboard(_board);
 	}
 
 	public void addNewLine(String line)
 	{
-		Score score = object.getScore(line);
-		score.setScore(LineNumber);
-		scores.add(score);
-		LineNumber--;
+		Score score = _object.getScore(line);
+		score.setScore(_LineNumber);
+		_scores.add(score);
+		_LineNumber--;
 	}
 
 	public void resetScoreBoard()
 	{
-		this.LineNumber = 16;
+		this._LineNumber = 16;
 		for (Score thescores : getScores())
 		{
-			player.getScoreboard().resetScores(thescores.getEntry());
+			_player.getScoreboard().resetScores(thescores.getEntry());
 		}
 	}
 
 	public ArrayList<Score> getScores()
 	{
-		return scores;
+		return _scores;
 	}
 
 	public static void globalScoreBoardUpdate()
 	{
-		if ((GameEngine.getCurrentGame().GetPanels() != null) || (!GameEngine.getCurrentGame().GetPanels().isEmpty()))
+		if ((GameEngine.getCurrentGame().getPanels() != null) || (!GameEngine.getCurrentGame().getPanels().isEmpty()))
 		{
-			for (Player playerPanels : GameEngine.getCurrentGame().GetPanels().keySet())
+			for (Player playerPanels : GameEngine.getCurrentGame().getPanels().keySet())
 			{
-				GameEngine.getCurrentGame().GetPanels().get(playerPanels).updateScoreBoard();
+				GameEngine.getCurrentGame().getPanels().get(playerPanels).updateScoreBoard();
 			}
 		}
 	}

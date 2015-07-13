@@ -4,17 +4,17 @@ import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
 import com.game.engine.GameEngine;
-import com.game.engine.Game.GameState;
+import com.game.engine.Game.GameManagement.GameState;
 
 public final class gameStateChange extends Event
 {
-	private static final HandlerList handlers = new HandlerList();
-	private GameState state;
-	private boolean cancelled;
+	private boolean _cancelled;
+	private static final HandlerList _handlers = new HandlerList();
+	private GameState _state;
 
 	public gameStateChange(GameState state)
 	{
-		this.state = state;
+		this._state = state;
 	}
 	
 	public GameState getFromState()
@@ -24,27 +24,27 @@ public final class gameStateChange extends Event
 	
 	public GameState getToState()
 	{
-		return state;
+		return _state;
 	}
 	
 	public boolean isCancelled()
 	{
-		return cancelled;
+		return _cancelled;
 	}
 	
 	public void setCancelled(boolean cancel)
 	{
-		cancelled = cancel;
+		_cancelled = cancel;
 	}
 	@Override
 	public HandlerList getHandlers()
 	{
-		return handlers;
+		return _handlers;
 	}
 	
 	public static HandlerList getHandlerList()
 	{
-		return handlers;
+		return _handlers;
 	}
 	
 }
